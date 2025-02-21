@@ -1,0 +1,26 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8" />
+  <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>xeokit simple viewer (webcomponents)</title>
+  <link rel="stylesheet" href="styles.css" />
+</head>
+
+<body>
+  <div class="app">
+    <xeo-viewer id="viewer-1" transparent="true">
+      <!-- <xeo-tree-view></xeo-tree-view> -->
+      <!-- <xeo-fast-nav scale-canvas-resolution-factor="0.5"></xeo-fast-nav> -->
+      <xeo-model src="https://sos-ch-gva-2.exo.io/creoox-public/example-no-1.xkt" bounding-box="true"></xeo-model>
+      <xeo-model src="las;https://sos-ch-gva-2.exo.io/creoox-public/example-no-1.laz"></xeo-model>
+      <!-- <xeo-model src="data:application/octet-stream;base64,iVBORw0KGgoAAAANSUhEUgAAB9AAAAdp..."></xeo-model> -->
+    </xeo-viewer>
+  </div>
+
+  <script src="../dist/index.js" type="module"></script>
+</body>
+
+</html>

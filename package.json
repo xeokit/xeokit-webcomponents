@@ -1,0 +1,55 @@
+{
+  "name": "@xeokit/xeokit-webcomponents",
+  "version": "0.0.0",
+  "description": "xeokit web components",
+  "type": "module",
+  "main": "dist/index.js",
+  "module": "dist/index.js",
+  "types": "dist/index.d.ts",
+  "files": [
+    "dist"
+  ],
+  "exports": {
+    ".": {
+      "import": "./dist/index.js",
+      "types": "./dist/index.d.ts"
+    }
+  },
+  "scripts": {
+    "dev": "http-server ./",
+    "build": "bun build ./src/index.ts --outdir ./dist --target browser",
+    "clean": "rm -rf dist",
+    "prepublishOnly": "bun run clean && bun run build",
+    "test": "bun test",
+    "format": "prettier --write \"src/**/*.{ts,js,css,html}\"",
+    "lint": "eslint src --ext .ts,.js"
+  },
+  "keywords": [
+    "xeokit",
+    "web-components",
+    "custom-elements",
+    "javascript"
+  ],
+  "author": "xeokit",
+  "license": "MIT",
+  "devDependencies": {
+    "@typescript-eslint/eslint-plugin": "latest",
+    "@typescript-eslint/parser": "latest",
+    "bun-types": "latest",
+    "eslint": "latest",
+    "http-server": "^14.1.1",
+    "prettier": "latest",
+    "typescript": "latest"
+  },
+  "publishConfig": {
+    "access": "public"
+  },
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/xeokit/xeokit-webcomponents"
+  },
+  "dependencies": {
+    "@creooxag/cx-converter": "latest",
+    "@xeokit/xeokit-sdk": "^2.6.66"
+  }
+}
