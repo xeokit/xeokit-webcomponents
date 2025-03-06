@@ -13,9 +13,9 @@
   <div class="app">
     <xeo-viewer id="viewer-1" transparent="true">
         <xeo-tree-view-panel width="350px" bgColor="rgba(239,207,227,0.6)" positionRight>
-          <xeo-objects-tree-view autoExpandDepth="3"></xeo-objects-tree-view>
-          <xeo-classes-tree-view autoExpandDepth="1"></xeo-classes-tree-view>
-          <xeo-storeys-tree-view autoExpandDepth="2"></xeo-classes-tree-view>
+          <xeo-tree-view hierarchy="containment" autoExpandDepth="3"></xeo-tree-view>
+          <xeo-tree-view hierarchy="types" autoExpandDepth="1"></xeo-tree-view>
+          <xeo-tree-view hierarchy="storeys" autoExpandDepth="2"></xeo-tree-view>
         </xeo-tree-view-panel>
       <!-- <xeo-fast-nav scale-canvas-resolution-factor="0.5"></xeo-fast-nav> -->
       <xeo-model src="https://sos-ch-gva-2.exo.io/creoox-public/example-no-1.xkt" bounding-box="true"></xeo-model>

@@ -6,8 +6,8 @@ type HierarchyType =  "containment" | "storeys" | "types";
 let trees : {viewerId: string, instance: XeoTreeView}[] = [];
 let tabs: {viewerId: string, button: HTMLButtonElement, contentContainer: HTMLElement}[] = [];
 
-class XeoTreeView extends HTMLElement {
-    protected hierarchy: string | undefined;
+export default class XeoTreeView extends HTMLElement {
+    private hierarchy: HierarchyType;
     private autoExpandDepth: number;
     private sortNodes: boolean;
 
@@ -18,28 +18,37 @@ class XeoTreeView extends HTMLElement {
     }
 
     async connectedCallback() {
+
+        this.autoExpandDepth = Number(this.getAttribute("autoExpandDepth")) || this.autoExpandDepth;
+
+        this.sortNodes = Boolean(this.getAttribute("sortNodes")) || this.sortNodes;
+
+        this.hierarchy = this.getAttribute("hierarchy") as HierarchyType || "containment";
+
         const viewerId = this.getViewerId(this);
 
         if (!viewerId) return;
-
-        const viewerTrees = trees.filter((tree) => {
-            return tree.viewerId === viewerId;
-        });
-        for (const tree of viewerTrees) {
-            if (tree.instance.hierarchy === this.hierarchy) {
-                console.error("only one tree-view with specific hierarchy can be nested inside xeo-tree-view-panel!");
-                return;
-            }
-        }
 
         trees.push({viewerId: viewerId, instance: this});
         const viewer = XeoViewerService.getInstance().getViewer(viewerId);
 
         if (!viewer) return;
 
+
+        const viewerTrees = trees.filter((tree) => {
+            return tree.viewerId === viewerId;
+        });
+        for (const tree of viewerTrees) {
+            if (tree.instance === this) continue;
+            if (tree.instance.hierarchy === this.hierarchy) {
+                console.error("only one tree-view with specific hierarchy can be nested inside xeo-tree-view-panel!");
+                return;
+            }
+        }
         const viewerElement = document.getElementById(viewerId);
 
         const viewerContainer = viewerElement!.shadowRoot!.querySelector('.xeokit-container');
+
         if (!viewerContainer) {
             console.error('all xeo-elements must be nested inside xeo-viewer tag');
             return;
@@ -60,14 +69,6 @@ class XeoTreeView extends HTMLElement {
         const tabButton = document.createElement("button");
         const tabText = document.createElement("span");
         tabButton.append(tabText);
-
-        if (this.hierarchy === "containment") {
-            tabText.innerText = "Objects";
-        } else if (this.hierarchy === "types") {
-            tabText.innerText = "Classes";
-        } else {
-            tabText.innerText = "Storeys";
-        };
         
         tabButtonsContainer.append(tabButton);
 
@@ -100,9 +101,13 @@ class XeoTreeView extends HTMLElement {
         div.setAttribute('style', containerStyle);
         tabButton.setAttribute('style', buttonStyle);
 
-        this.autoExpandDepth = Number(this.getAttribute("autoExpandDepth")) || this.autoExpandDepth;
-
-        this.sortNodes = Boolean(this.getAttribute("sortNodes")) || this.sortNodes;
+        if (this.hierarchy === "containment") {
+            tabText.innerText = "Objects";
+        } else if (this.hierarchy === "types") {
+            tabText.innerText = "Classes";
+        } else {
+            tabText.innerText = "Storeys";
+        };
 
         this.updateTrees(viewerId);
 
@@ -188,25 +193,4 @@ class XeoTreeView extends HTMLElement {
         viewerTabs[0].button.classList.add("active");
         viewerTabs[0].button.style.borderBottom = "2px solid black"
     }
-}
-
-export class XeoObjectsTreeView extends XeoTreeView {
-    constructor() {
-        super();
-        this.hierarchy = "containment";
-    }
-}
-
-export class XeoStoreysTreeView extends XeoTreeView {
-    constructor() {
-        super();
-        this.hierarchy = "storeys";
-    }
-}
-
-export class XeoClassesTreeView extends XeoTreeView {
-    constructor() {
-        super();
-        this.hierarchy = "types";
-    }
-}
+};
