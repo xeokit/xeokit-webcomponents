@@ -18,17 +18,25 @@ template.innerHTML = `
       padding: 0;
     }
 
+    :host ul {
+      padding-left: 15px;
+    }
+
+    :host ul, li {
+      list-style-type: none;
+    }
+
     #xeokit-canvas {
       display: block;
       margin: 0;
       padding: 0;
-      width: 100vw;
-      height: 100vh;
+      width: 100%;
+      height: 100%;
       background: lightblue;
       background-image: linear-gradient(lightblue, white);
     }
 
-    #xeokit-container { display: block; margin: 0; padding: 0; width: 100%; height: 100%; }
+    .xeokit-container { display: block; margin: 0; padding: 0; width: 100%; height: 100%; position: relative; }
     .sk-fading-circle { background: transparent; margin: 20px auto; width: 50px; height:50px; position: relative; }
     .sk-fading-circle .sk-circle { width: 120%; height: 120%; position: absolute; left: 0; top: 0; }
     .sk-fading-circle .sk-circle:before { content: ''; display: block; margin: 0 auto; width: 15%; height: 15%; background-color: #ff8800; border-radius: 100%; -webkit-animation: sk-circleFadeDelay 1.2s infinite ease-in-out both; animation: sk-circleFadeDelay 1.2s infinite ease-in-out both; }
