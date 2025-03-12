@@ -18,6 +18,11 @@ template.innerHTML = `
       padding: 0;
     }
 
+    :host a {
+      text-decoration: none;
+      color: black;
+    }
+
     :host ul {
       padding-left: 15px;
     }
