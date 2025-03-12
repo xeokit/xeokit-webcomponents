@@ -6,7 +6,7 @@ class XeoTreeViewPanel extends HTMLElement {
     private bgColor: string;
     private positionLeft: boolean;
     private positionRight: boolean;
-  
+
     constructor() {
         super();
         this.style.zIndex = "1000";
@@ -30,7 +30,7 @@ class XeoTreeViewPanel extends HTMLElement {
         this.width = this.getAttribute("width") || this.width;
         this.height = this.getAttribute("height") || this.height;
 
-        this.positionRight =  this.hasAttribute("positionRight") || this.positionRight;
+        this.positionRight = this.hasAttribute("positionRight") || this.positionRight;
         this.positionLeft = !this.positionRight;
 
         this.bgColor = this.getAttribute("bgColor") || this.bgColor;

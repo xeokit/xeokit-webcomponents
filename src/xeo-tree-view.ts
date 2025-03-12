@@ -2,9 +2,9 @@ import { TreeViewPlugin } from "@xeokit/xeokit-sdk";
 import XeoViewerService from "./xeo-viewer-service";
 import { RenderService } from "./render-service";
 
-type HierarchyType =  "containment" | "storeys" | "types";
-let trees : {viewerId: string, instance: XeoTreeView}[] = [];
-let tabs: {viewerId: string, button: HTMLButtonElement, contentContainer: HTMLElement}[] = [];
+type HierarchyType = "containment" | "storeys" | "types";
+let trees: { viewerId: string, instance: XeoTreeView }[] = [];
+let tabs: { viewerId: string, button: HTMLButtonElement, contentContainer: HTMLElement }[] = [];
 
 export default class XeoTreeView extends HTMLElement {
     private hierarchy: HierarchyType;
@@ -29,7 +29,7 @@ export default class XeoTreeView extends HTMLElement {
 
         if (!viewerId) return;
 
-        trees.push({viewerId: viewerId, instance: this});
+        trees.push({ viewerId: viewerId, instance: this });
         const viewer = XeoViewerService.getInstance().getViewer(viewerId);
 
         if (!viewer) return;
@@ -53,7 +53,7 @@ export default class XeoTreeView extends HTMLElement {
             console.error('all xeo-elements must be nested inside xeo-viewer tag');
             return;
         }
-        
+
         const panelContainer = viewerElement!.shadowRoot!.getElementById(`${viewerId}-tree-panel`);
 
         if (!panelContainer) {
@@ -69,12 +69,12 @@ export default class XeoTreeView extends HTMLElement {
         const tabButton = document.createElement("button");
         const tabText = document.createElement("span");
         tabButton.append(tabText);
-        
+
         tabButtonsContainer.append(tabButton);
 
         const div = document.createElement("div");
 
-        tabs.push({viewerId: viewerId, button: tabButton, contentContainer: div});
+        tabs.push({ viewerId: viewerId, button: tabButton, contentContainer: div });
 
         panelContainer!.appendChild(div);
 
@@ -112,9 +112,9 @@ export default class XeoTreeView extends HTMLElement {
         this.updateTrees(viewerId);
 
         new TreeViewPlugin(viewer, {
-            containerElement: div, 
-            hierarchy: this.hierarchy as HierarchyType, 
-            autoExpandDepth: this.autoExpandDepth, 
+            containerElement: div,
+            hierarchy: this.hierarchy as HierarchyType,
+            autoExpandDepth: this.autoExpandDepth,
             sortNodes: this.sortNodes,
             renderService: new RenderService(viewerElement!.shadowRoot!)
         });
@@ -144,9 +144,9 @@ export default class XeoTreeView extends HTMLElement {
                     tab.button.style.borderBottom = "2px solid black"
                 } else {
                     tab.button.classList.remove("active");
-                    tab.contentContainer.style.display = "none";    
-                    tab.button.style.fontWeight = "400";   
-                    tab.button.style.borderBottom = "none"           
+                    tab.contentContainer.style.display = "none";
+                    tab.button.style.fontWeight = "400";
+                    tab.button.style.borderBottom = "none"
                 }
             }
         });
@@ -157,7 +157,7 @@ export default class XeoTreeView extends HTMLElement {
             console.error("wrong hierarchy of xeo-elements!");
             return null;
         };
-        
+
         if (node.parentElement) {
             if (node.parentElement.nodeName !== "XEO-VIEWER") {
                 return this.getViewerId(node.parentElement, depth + 1);
@@ -176,11 +176,11 @@ export default class XeoTreeView extends HTMLElement {
         });
         const viewerTabs = tabs.filter((tab) => {
             return tab.viewerId === viewerId;
-        });7
+        });
 
         for (const element of viewerTabs) {
             element.contentContainer.style.display = "none";
-            element.button.classList.remove("active");     
+            element.button.classList.remove("active");
             if (viewerTrees.length === 1) {
                 element.button.style.display = "none";
             } else {
