@@ -4,7 +4,7 @@ interface Viewers {
   [key: string]: Viewer;
 }
 
-export default class XeoViewerService {
+export class XeoViewerService {
   static instance: XeoViewerService;
   _viewers: Viewers;
 

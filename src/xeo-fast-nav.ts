@@ -1,4 +1,4 @@
-import XeoViewerService from "./xeo-viewer-service";
+import { XeoViewerService } from "./xeo-viewer-service";
 import { FastNavPlugin } from "@xeokit/xeokit-sdk";
 
 class XeoFastNav extends HTMLElement {

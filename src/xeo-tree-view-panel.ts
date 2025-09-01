@@ -1,4 +1,4 @@
-import XeoViewerService from "./xeo-viewer-service";
+import { XeoViewerService } from "./xeo-viewer-service";
 
 class XeoTreeViewPanel extends HTMLElement {
     private width: string;

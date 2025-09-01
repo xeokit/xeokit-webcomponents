@@ -7,25 +7,68 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>xeokit simple viewer (webcomponents)</title>
   <link rel="stylesheet" href="styles.css" />
-  <!-- <script src="../dist/index.js" type="module"></script> -->
-  <script src="https://cdn.jsdelivr.net/npm/@xeokit/xeokit-webcomponents/dist/index.js" type="module"></script>
+  <!-- <script src="https://cdn.jsdelivr.net/npm/@xeokit/xeokit-webcomponents/dist/index.js" type="module"></script> -->
+  <script type="module">
+    import { XeoViewerService } from "../dist/index.js";
+    const viewer = XeoViewerService.getInstance().getViewer("viewer-1");
 
+    // Listen to model-entity-clicked events
+    const viewerComponent = document.getElementById("viewer-1");
+    viewerComponent.addEventListener('model-entity-clicked', (event) => {
+      console.log('on model-entity-clicked:', { detail: event.detail });
+    });
+
+    // Listen to model-loaded events
+    const xktModel = document.getElementById("model-1");
+    xktModel.addEventListener('model-loaded', (event) => {
+      console.log('on model-loaded:', { detail: event.detail });
+    });
+
+    const containmentTreeView = document.getElementById("tree-view-1");
+    containmentTreeView.addEventListener('tree-view-node-title-clicked', (event) => {
+      const entity = event.detail.viewer.scene.objects[event.detail.treeViewNode.objectId];
+
+      console.log('on tree-view-node-title-clicked:', { detail: event.detail, entity });
+    });
+
+    // Add custom events to viewer scene (https://xeokit.github.io/xeokit-sdk/docs/class/src/viewer/scene/input/Input.js~Input.html)
+    // viewer.scene.input.on("mouseclicked", (coords) => {
+    //   const hit = viewer.scene.pick({
+    //     canvasPos: coords
+    //   });
+
+    //   if (hit && hit.entity && hit.entity.isObject) {
+    //     const entity = hit.entity;
+    //     const metaObject = viewer.metaScene.metaObjects[entity.id];
+
+    //     if (metaObject) {
+    //       console.log("Custom Clicked entity:", {
+    //         id: entity.id,
+    //         name: metaObject.name,
+    //         type: metaObject.type,
+    //         volume: entity.volume,
+    //         aabb: entity.aabb
+    //       });
+    //     }
+    //   }
+    // });
+  </script>
 </head>
 
 <body>
   <div class="app">
     <xeo-viewer id="viewer-1" transparent="true">
-        <xeo-tree-view-panel width="350px" bgColor="rgba(239,207,227,0.6)" positionRight>
-          <xeo-tree-view hierarchy="containment" autoExpandDepth="3"></xeo-tree-view>
-          <xeo-tree-view hierarchy="types" autoExpandDepth="1"></xeo-tree-view>
-          <xeo-tree-view hierarchy="storeys" autoExpandDepth="2"></xeo-tree-view>
-        </xeo-tree-view-panel>
-      <!-- <xeo-fast-nav scale-canvas-resolution-factor="0.5"></xeo-fast-nav> -->
-      <xeo-model src="https://sos-ch-gva-2.exo.io/creoox-public/example-no-1.xkt" bounding-box="true"></xeo-model>
-      <xeo-model src="las;https://sos-ch-gva-2.exo.io/creoox-public/example-no-1.laz"></xeo-model>
+      <xeo-tree-view-panel width="350px" bgColor="rgba(239,207,227,0.6)" positionRight>
+        <xeo-tree-view hierarchy="containment" autoExpandDepth="3" id="tree-view-1"></xeo-tree-view>
+        <xeo-tree-view hierarchy="types" autoExpandDepth="1" id="tree-view-2"></xeo-tree-view>
+        <xeo-tree-view hierarchy="storeys" autoExpandDepth="2" id="tree-view-3"></xeo-tree-view>
+      </xeo-tree-view-panel>
+      <xeo-fast-nav scale-canvas-resolution-factor="0.8"></xeo-fast-nav>
+      <xeo-model src="https://sos-ch-gva-2.exo.io/creoox-public/example-no-1.xkt" id="model-1"></xeo-model>
+      <!-- <xeo-model src="las;https://sos-ch-gva-2.exo.io/creoox-public/example-no-1.laz"></xeo-model> -->
       <!-- <xeo-model src="data:application/octet-stream;base64,iVBORw0KGgoAAAANSUhEUgAAB9AAAAdp..."></xeo-model> -->
     </xeo-viewer>
   </div>
 </body>
-</html>
 
+</html>
