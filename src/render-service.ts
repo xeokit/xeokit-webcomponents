@@ -62,6 +62,7 @@ export class RenderService {
 
     const span = document.createElement('span');
     span.textContent = node.title;
+    span.style.cursor = "pointer";
     nodeElement.appendChild(span);
 
     if (titleClickHandler) {
@@ -82,6 +83,7 @@ export class RenderService {
     li.appendChild(switchElement);
 
     const span = document.createElement('span');
+    span.style.cursor = "pointer";
     span.textContent = rootName;
     li.appendChild(span);
 

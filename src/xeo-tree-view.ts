@@ -1,8 +1,10 @@
-import { TreeViewPlugin } from "@xeokit/xeokit-sdk";
-import XeoViewerService from "./xeo-viewer-service";
+import { TreeViewPlugin, type Viewer, type TreeViewPluginConfiguration } from "@xeokit/xeokit-sdk";
+import { XeoViewerService } from "./xeo-viewer-service";
 import { RenderService } from "./render-service";
+import { TreeViewNode } from "@xeokit/xeokit-sdk/types/plugins/TreeViewPlugin/TreeViewNode";
 
-type HierarchyType = "containment" | "storeys" | "types";
+type HierarchyType = TreeViewPluginConfiguration["hierarchy"];
+
 let trees: { viewerId: string, instance: XeoTreeView }[] = [];
 let tabs: { viewerId: string, button: HTMLButtonElement, contentContainer: HTMLElement }[] = [];
 
@@ -38,6 +40,7 @@ export default class XeoTreeView extends HTMLElement {
         const viewerTrees = trees.filter((tree) => {
             return tree.viewerId === viewerId;
         });
+
         for (const tree of viewerTrees) {
             if (tree.instance === this) continue;
             if (tree.instance.hierarchy === this.hierarchy) {
@@ -111,12 +114,22 @@ export default class XeoTreeView extends HTMLElement {
 
         this.updateTrees(viewerId);
 
-        new TreeViewPlugin(viewer, {
+        const treeViewPlugin = new TreeViewPlugin(viewer, {
             containerElement: div,
             hierarchy: this.hierarchy as HierarchyType,
             autoExpandDepth: this.autoExpandDepth,
             sortNodes: this.sortNodes,
             renderService: new RenderService(viewerElement!.shadowRoot!)
+        });
+
+        treeViewPlugin.on('nodeTitleClicked', (data: { event: MouseEvent, viewer: Viewer, treeViewPlugin: TreeViewPlugin, treeViewNode: TreeViewNode }) => {
+            const ce = new CustomEvent('tree-view-node-title-clicked', {
+                bubbles: true,
+                composed: true,
+                detail: { event: data.event, treeViewNode: data.treeViewNode, plugin: data.treeViewPlugin, viewer: data.viewer }
+            });
+
+            this.dispatchEvent(ce);
         });
 
         tabButton.addEventListener("mouseover", () => {

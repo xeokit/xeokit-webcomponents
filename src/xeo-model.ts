@@ -1,5 +1,5 @@
-import XeoViewerService from "./xeo-viewer-service";
-import { Viewer, buildBoxLinesGeometryFromAABB, Mesh, PhongMaterial, ReadableGeometry } from "@xeokit/xeokit-sdk";
+import { XeoViewerService } from "./xeo-viewer-service";
+import { Viewer, buildBoxLinesGeometryFromAABB, Mesh, PhongMaterial, ReadableGeometry, VBOSceneModel, Node } from "@xeokit/xeokit-sdk";
 import { XKTLoaderPlugin, LASLoaderPlugin, OBJLoaderPlugin, GLTFLoaderPlugin, STLLoaderPlugin, DotBIMLoaderPlugin } from "@xeokit/xeokit-sdk";
 import { ifc2gltf } from '@creooxag/cx-converter';
 
@@ -49,6 +49,16 @@ class XeoModel extends HTMLElement {
     }
   }
 
+  handleLoaded(sceneModel: VBOSceneModel) {
+    const ce = new CustomEvent('model-loaded', {
+      bubbles: true,
+      composed: true,
+      detail: { model: sceneModel }
+    });
+
+    this.dispatchEvent(ce);
+  }
+
   async connectedCallback() {
     this.viewerId = this.parentElement!.getAttribute("id");
     if (!this.viewerId) return;
@@ -70,6 +80,12 @@ class XeoModel extends HTMLElement {
         this.type = this.src.split('.').pop();
       }
     }
+
+    // if (this.hasAttribute("@model-loaded")) {
+    //   this.addEventListener("model-loaded", (e: any) => {
+    //     console.log("Model loaded EVENT:", e.detail.model);
+    //   });
+    // }
 
     if (this.hasAttribute("show-edges")) {
       this.showEdges = this.getAttribute("show-edges") === 'true' || this.getAttribute("show-edges") === '1';
@@ -114,6 +130,7 @@ class XeoModel extends HTMLElement {
 
 
       sceneModel.on("loaded", function () {
+        self.handleLoaded(sceneModel);
         const t1 = performance.now();
         console.log(`XKT Model loaded in ${Math.floor(t1 - t0) / 1000.0} seconds, Objects: ${sceneModel.numEntities}`);
 
@@ -138,6 +155,7 @@ class XeoModel extends HTMLElement {
       });
 
       sceneModel.on("loaded", function () {
+        self.handleLoaded(sceneModel);
         const t1 = performance.now();
         console.log(`LAS Model loaded in ${Math.floor(t1 - t0) / 1000.0} seconds, Objects: ${sceneModel.numEntities}`);
 
@@ -161,6 +179,14 @@ class XeoModel extends HTMLElement {
       });
 
       sceneModel.on("loaded", function () {
+        const ce = new CustomEvent('model-loaded', {
+          bubbles: true,
+          composed: true,
+          detail: { model: sceneModel }
+        });
+
+        this.dispatchEvent(ce);
+
         const t1 = performance.now();
         console.log(`OBJ Model loaded in ${Math.floor(t1 - t0) / 1000.0} seconds`);
 
@@ -187,6 +213,7 @@ class XeoModel extends HTMLElement {
       });
 
       sceneModel.on("loaded", function () {
+        self.handleLoaded(sceneModel);
         const t1 = performance.now();
         console.log(`GLTF Model loaded in ${Math.floor(t1 - t0) / 1000.0} seconds, Objects: ${sceneModel.numEntities}`);
 
@@ -208,6 +235,7 @@ class XeoModel extends HTMLElement {
       });
 
       sceneModel.on("loaded", function () {
+        self.handleLoaded(sceneModel);
         const t1 = performance.now();
         console.log(`STL Model loaded in ${Math.floor(t1 - t0) / 1000.0} seconds, Objects: ${sceneModel.numEntities}`);
 

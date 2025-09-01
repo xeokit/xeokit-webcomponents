@@ -1,4 +1,4 @@
-import XeoViewerService from "./xeo-viewer-service";
+import { XeoViewerService } from "./xeo-viewer-service";
 import { Viewer, NavCubePlugin } from "@xeokit/xeokit-sdk";
 
 const template = document.createElement("template");
@@ -95,9 +95,13 @@ class XeoViewer extends HTMLElement {
   transparent: boolean;
   dtxEnabled: boolean;
   colorTextureEnabled: boolean;
+  _shadowRoot: ShadowRoot;
+  customEvent: CustomEvent;
 
   constructor() {
     super();
+
+    //this._shadowRoot = this.attachShadow({ mode: "open" });
 
     this.transparent = false;
     this.dtxEnabled = false;
@@ -155,6 +159,28 @@ class XeoViewer extends HTMLElement {
       shadowVisible: false,
     });
 
+    viewer.scene.input.on("mouseclicked", (coords) => {
+      const hit = viewer.scene.pick({
+        canvasPos: coords
+      });
+
+      if (hit && hit.entity && hit.entity.isObject) {
+        const entity = hit.entity;
+        const metaObject = viewer.metaScene.metaObjects[entity.id];
+
+        if (metaObject) {
+          this.customEvent = new CustomEvent('model-entity-clicked', {
+            bubbles: true,
+            cancelable: false,
+            composed: true,
+            detail: { entity, metaObject }
+          });
+
+          this.dispatchEvent(this.customEvent);
+        }
+      }
+    });
+
     XeoViewerService.getInstance().setViewer(viewer, this.id);
   };
 
@@ -178,6 +204,15 @@ class XeoViewer extends HTMLElement {
     if (this.hasAttribute("color-texture-enabled")) {
       this.colorTextureEnabled = this.getAttribute("color-texture-enabled") === "true" || this.getAttribute("color-texture-enabled") === '1';
     }
+
+    // if (this.hasAttribute("@model-entity-clicked")) {
+    //   console.log("Model entity clicked listener added!!!");
+    //   this.addEventListener("model-entity-clicked", (e: any) => {
+    //     console.log('model-entity-clicked', { e });
+    //     //e();
+    //     //console.log("Model entity clicked EVENT:", e.detail.model);
+    //   });
+    // }
 
     this.initViewer();
   }
