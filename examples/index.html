@@ -8,15 +8,16 @@
   <title>xeokit simple viewer (webcomponents)</title>
   <link rel="stylesheet" href="styles.css" />
   <!-- <script src="https://cdn.jsdelivr.net/npm/@xeokit/xeokit-webcomponents/dist/index.js" type="module"></script> -->
+  <script src="../dist/index.js" type="module"></script>
   <script type="module">
     import { XeoViewerService } from "../dist/index.js";
-    const viewer = XeoViewerService.getInstance().getViewer("viewer-1");
+    // const viewer = XeoViewerService.getInstance().getViewer("viewer-1");
 
-    // Listen to model-entity-clicked events
-    const viewerComponent = document.getElementById("viewer-1");
-    viewerComponent.addEventListener('model-entity-clicked', (event) => {
-      console.log('on model-entity-clicked:', { detail: event.detail });
-    });
+    // // Listen to model-entity-clicked events
+    // const viewerComponent = document.getElementById("viewer-1");
+    // viewerComponent.addEventListener('model-entity-clicked', (event) => {
+    //   console.log('on model-entity-clicked:', { detail: event.detail });
+    // });
 
     // // Listen to model-loaded events
     // const xktModel = document.getElementById("model-1");
@@ -57,8 +58,9 @@
 
 <body>
   <div class="app">
-    <xeo-viewer id="viewer-1" transparent="true" @model-entity-clicked="entityClicked">
-      <xeo-tree-view-panel width="350px" bgColor="rgba(239,207,227,0.6)" positionRight>
+    <xeo-viewer id="viewer-1" transparent="true" @model-entity-clicked="entityClicked" nav-cube-enabled="true"
+      nav-cube-position="bottom-right">
+      <xeo-tree-view-panel width="350px" bgColor="rgba(239,207,227,0.6)" position="right">
         <xeo-tree-view hierarchy="containment" autoExpandDepth="3" id="tree-view-1"
           @tree-view-node-title-clicked="treeNodeTitleClicked"></xeo-tree-view>
         <xeo-tree-view hierarchy="types" autoExpandDepth="1" id="tree-view-2"></xeo-tree-view>
