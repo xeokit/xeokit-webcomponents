@@ -4,8 +4,7 @@ class XeoTreeViewPanel extends HTMLElement {
     private width: string;
     private height: string;
     private bgColor: string;
-    private positionLeft: boolean;
-    private positionRight: boolean;
+    private position: string;
 
     constructor() {
         super();
@@ -13,6 +12,7 @@ class XeoTreeViewPanel extends HTMLElement {
         this.width = "";
         this.height = "100%"
         this.bgColor = "rgba(255,255,255,0.6)";
+        this.position = "right";
     }
 
     async connectedCallback() {
@@ -30,16 +30,16 @@ class XeoTreeViewPanel extends HTMLElement {
         this.width = this.getAttribute("width") || this.width;
         this.height = this.getAttribute("height") || this.height;
 
-        this.positionRight = this.hasAttribute("positionRight") || this.positionRight;
-        this.positionLeft = !this.positionRight;
+        this.position = this.getAttribute("position") || this.position;
 
-        this.bgColor = this.getAttribute("bgColor") || this.bgColor;
-
+        if (this.position != 'right' && this.position != 'left') {
+            this.position = 'right';
+        }
 
         const div = document.createElement("div");
         div.id = `${viewerId}-tree-panel`;
 
-        viewerContainer!.appendChild(div);
+        viewerContainer?.appendChild(div);
 
         const tabSwitchContainer = document.createElement("div");
         tabSwitchContainer.className = "tabs";
@@ -48,20 +48,21 @@ class XeoTreeViewPanel extends HTMLElement {
         const tabStyle = `
         width: 100%;
         display: flex;
-        `
-        const style = `
+        `;
+
+        let style = `
         position: absolute;
         padding: 10px;
         display: flex;
         flex-direction: column;
         top: 0px;
-        right: ${this.positionLeft ? "" : "0px"};
-        left: ${this.positionRight ? "" : "0px"};
         width: ${this.width};
         min-width: 250px;
         height: ${this.height};
         background-color: ${this.bgColor};
-        direction: ${this.positionLeft ? "" : "ltr"}
+        direction: ${this.position == 'left' ? "rtl" : "ltr"};
+        left: ${this.position == 'left' ? "0px" : "unset"};
+        right: ${this.position == 'right' ? "0px" : "unset"};
         `;
 
         div.setAttribute('style', style);

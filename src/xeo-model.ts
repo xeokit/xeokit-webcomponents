@@ -1,7 +1,7 @@
 import { XeoViewerService } from "./xeo-viewer-service";
 import { Viewer, buildBoxLinesGeometryFromAABB, Mesh, PhongMaterial, ReadableGeometry, VBOSceneModel, Node } from "@xeokit/xeokit-sdk";
 import { XKTLoaderPlugin, LASLoaderPlugin, OBJLoaderPlugin, GLTFLoaderPlugin, STLLoaderPlugin, DotBIMLoaderPlugin } from "@xeokit/xeokit-sdk";
-import { ifc2gltf } from '@creooxag/cx-converter';
+import { ifc2gltf } from '@creooxag/cxconverter';
 
 class XeoModel extends HTMLElement {
   src: string;
@@ -260,6 +260,7 @@ class XeoModel extends HTMLElement {
       });
 
       sceneModel.on("loaded", function () {
+        self.handleLoaded(sceneModel);
         const t1 = performance.now();
         console.log(`DotBIM Model loaded in ${Math.floor(t1 - t0) / 1000.0} seconds, Objects: ${sceneModel.numEntities}`);
 
@@ -296,7 +297,7 @@ class XeoModel extends HTMLElement {
           }
         });
 
-      const { gltf, metaData } = await ifc2gltf(uint8Array, "remote", (progress) => { console.log({ progress }) }, (textProgress) => { console.log({ textProgress }) }, options);
+      const { gltf, metaData } = await ifc2gltf(uint8Array, { remote: true, inputOptions: options });
 
       const t0 = performance.now();
       const currentModelId = "myIFCModel" + Math.random();
@@ -309,6 +310,7 @@ class XeoModel extends HTMLElement {
       });
 
       sceneModel.on("loaded", function () {
+        self.handleLoaded(sceneModel);
         const t1 = performance.now();
         console.log(`IFC Model loaded in ${Math.floor(t1 - t0) / 1000.0} seconds, Objects: ${sceneModel.numEntities}`);
 
