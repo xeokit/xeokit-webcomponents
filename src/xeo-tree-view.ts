@@ -79,7 +79,7 @@ export default class XeoTreeView extends HTMLElement {
 
         tabs.push({ viewerId: viewerId, button: tabButton, contentContainer: div });
 
-        panelContainer!.appendChild(div);
+        panelContainer?.appendChild(div);
 
         const containerStyle = `
         white-space: wrap;
