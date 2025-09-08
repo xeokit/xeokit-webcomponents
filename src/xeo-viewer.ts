@@ -9,7 +9,6 @@ template.innerHTML = `
       <canvas id="xeokit-canvas-cube"></canvas>
     </div>
     <style>
-
     :host {
       display: block;
       width: 100%;
@@ -71,16 +70,16 @@ template.innerHTML = `
     @keyframes sk-circleFadeDelay { 0%, 39%, 100% { opacity: 0; } 40% { opacity: 1; } }
 
     #xeokit-canvas-cube {
-    position: absolute;
-    box-sizing: border-box;
-    display: block;
-    height: 150px;
-    width: 150px;
-    left: 25px;
-    overflow-x: clip;
-    overflow-y: clip;
-    top: 25px;
-    visibility; visible;
+      position: absolute;
+      box-sizing: border-box;
+      display: block;
+      height: 150px;
+      width: 150px;
+      left: 25px;
+      overflow-x: clip;
+      overflow-y: clip;
+      top: 25px;
+      visibility: visible;
     }
 
     #xeokit-spinner-element {
@@ -95,28 +94,28 @@ class XeoViewer extends HTMLElement {
   transparent: boolean;
   dtxEnabled: boolean;
   colorTextureEnabled: boolean;
+  navCubeEnabled: boolean;
+  navCubePosition: string | null;
   _shadowRoot: ShadowRoot;
   customEvent: CustomEvent;
 
   constructor() {
     super();
 
-    //this._shadowRoot = this.attachShadow({ mode: "open" });
-
     this.transparent = false;
     this.dtxEnabled = false;
     this.colorTextureEnabled = false;
+    this.navCubeEnabled = true;
+    this.navCubePosition = "bottom-left";
 
     this.attachShadow({ mode: "open" });
-    this.shadowRoot!.appendChild(template.content.cloneNode(true));
+    this.shadowRoot?.appendChild(template.content.cloneNode(true));
   }
 
   initViewer = () => {
     const canvas = this.shadowRoot!.querySelector("#xeokit-canvas") as HTMLCanvasElement;
-    const spinner = this.shadowRoot!.querySelector("#xeokit-spinner-element") as HTMLDivElement;
+    //const spinner = this.shadowRoot!.querySelector("#xeokit-spinner-element") as HTMLDivElement;
     const canvasCube = this.shadowRoot!.querySelector("#xeokit-canvas-cube") as HTMLCanvasElement;
-
-
 
     const viewer = new Viewer({
       canvasElement: canvas,
@@ -149,43 +148,68 @@ class XeoViewer extends HTMLElement {
 
     viewer.cameraFlight.jumpTo({ projection: 'ortho' }); // ortho
 
-    const navCubePlugin = new NavCubePlugin(viewer, {
-      //canvasId: "xeokit-canvas-cube",
-      canvasElement: canvasCube,
-      color: "lightblue",
-      cameraFly: true,       // Fly camera to each selected axis/diagonal
-      cameraFitFOV: 45,        // How much field-of-view the scene takes once camera has fitted it to view
-      cameraFlyDuration: 0.5,
-      shadowVisible: false,
-    });
-
-    viewer.scene.input.on("mouseclicked", (coords) => {
-      const hit = viewer.scene.pick({
-        canvasPos: coords
+    if (this.navCubeEnabled) {
+      const navCubePlugin = new NavCubePlugin(viewer, {
+        canvasElement: canvasCube,
+        color: "lightblue",
+        cameraFly: true,
+        cameraFitFOV: 45,
+        cameraFlyDuration: 0.5,
+        shadowVisible: false,
       });
 
-      if (hit && hit.entity && hit.entity.isObject) {
-        const entity = hit.entity;
-        const metaObject = viewer.metaScene.metaObjects[entity.id];
+      //canvasCube.style.left = '25px';
 
-        if (metaObject) {
-          this.customEvent = new CustomEvent('model-entity-clicked', {
-            bubbles: true,
-            cancelable: false,
-            composed: true,
-            detail: { entity, metaObject }
-          });
-
-          this.dispatchEvent(this.customEvent);
-        }
+      if (this.navCubePosition === "top-left") {
+        canvasCube.style.left = '25px';
+        canvasCube.style.right = 'auto';
+        canvasCube.style.top = '25px';
+        canvasCube.style.bottom = 'auto';
+      } else if (this.navCubePosition === "top-right") {
+        canvasCube.style.left = 'auto';
+        canvasCube.style.right = '25px';
+        canvasCube.style.top = '25px';
+        canvasCube.style.bottom = 'auto';
+      } else if (this.navCubePosition === "bottom-left") {
+        canvasCube.style.left = '25px';
+        canvasCube.style.right = 'auto';
+        canvasCube.style.top = 'auto';
+        canvasCube.style.bottom = '25px';
+      } else if (this.navCubePosition === "bottom-right") {
+        canvasCube.style.left = 'auto';
+        canvasCube.style.right = '25px';
+        canvasCube.style.top = 'auto';
+        canvasCube.style.bottom = '25px';
       }
-    });
 
-    XeoViewerService.getInstance().setViewer(viewer, this.id);
-  };
+      viewer.scene.input.on("mouseclicked", (coords) => {
+        const hit = viewer.scene.pick({
+          canvasPos: coords
+        });
+
+        if (hit && hit.entity && hit.entity.isObject) {
+          const entity = hit.entity;
+          const metaObject = viewer.metaScene.metaObjects[entity.id];
+
+          if (metaObject) {
+            this.customEvent = new CustomEvent('model-entity-clicked', {
+              bubbles: true,
+              cancelable: false,
+              composed: true,
+              detail: { entity, metaObject }
+            });
+
+            this.dispatchEvent(this.customEvent);
+          }
+        }
+      });
+
+      XeoViewerService.getInstance().setViewer(viewer, this.id);
+    };
+  }
 
   static get observedAttributes() {
-    return ["id", "transparent", "dtx-enabled", "color-texture-enabled"];
+    return ["id", "transparent", "dtx-enabled", "color-texture-enabled", "nav-cube-enabled", "nav-cube-position"];
   }
 
   connectedCallback() {
@@ -205,14 +229,17 @@ class XeoViewer extends HTMLElement {
       this.colorTextureEnabled = this.getAttribute("color-texture-enabled") === "true" || this.getAttribute("color-texture-enabled") === '1';
     }
 
-    // if (this.hasAttribute("@model-entity-clicked")) {
-    //   console.log("Model entity clicked listener added!!!");
-    //   this.addEventListener("model-entity-clicked", (e: any) => {
-    //     console.log('model-entity-clicked', { e });
-    //     //e();
-    //     //console.log("Model entity clicked EVENT:", e.detail.model);
-    //   });
-    // }
+    if (this.hasAttribute("nav-cube-enabled")) {
+      this.navCubeEnabled = this.getAttribute("nav-cube-enabled") === "true" || this.getAttribute("nav-cube-enabled") === '1';
+    }
+
+    if (this.hasAttribute("nav-cube-position")) {
+      this.navCubePosition = this.getAttribute("nav-cube-position");
+      if (this.navCubePosition !== "top-left" && this.navCubePosition !== "top-right" && this.navCubePosition !== "bottom-left" && this.navCubePosition !== "bottom-right") {
+        console.error(`Invalid nav-cube-position: ${this.navCubePosition}`);
+        this.navCubePosition = "bottom-left";
+      }
+    }
 
     this.initViewer();
   }
