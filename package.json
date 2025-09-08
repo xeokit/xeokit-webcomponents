@@ -49,7 +49,7 @@
     "url": "https://github.com/xeokit/xeokit-webcomponents"
   },
   "dependencies": {
-    "@creooxag/cx-converter": "latest",
-    "@xeokit/xeokit-sdk": "^2.6.66"
+    "@creooxag/cxconverter": "^0.0.3-alpha",
+    "@xeokit/xeokit-sdk": "^2.6.90"
   }
 }
