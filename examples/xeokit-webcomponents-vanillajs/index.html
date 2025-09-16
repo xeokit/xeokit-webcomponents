@@ -8,10 +8,10 @@
   <title>xeokit simple viewer (webcomponents)</title>
   <link rel="stylesheet" href="styles.css" />
   <!-- <script src="https://cdn.jsdelivr.net/npm/@xeokit/xeokit-webcomponents/dist/index.js" type="module"></script> -->
-  <script src="../dist/index.js" type="module"></script>
+  <script src="../../dist/index.js" type="module"></script>
   <script type="module">
-    import { XeoViewerService } from "../dist/index.js";
-    // const viewer = XeoViewerService.getInstance().getViewer("viewer-1");
+    import { XeoViewerService } from "../../dist/index.js";
+    const viewer = XeoViewerService.getInstance().getViewer("viewer-1");
 
     // // Listen to model-entity-clicked events
     // const viewerComponent = document.getElementById("viewer-1");
@@ -25,41 +25,41 @@
     //   console.log('on model-loaded:', { detail: event.detail });
     // });
 
-    // const containmentTreeView = document.getElementById("tree-view-1");
-    // containmentTreeView.addEventListener('tree-view-node-title-clicked', (event) => {
-    //   const entity = event.detail.viewer.scene.objects[event.detail.treeViewNode.objectId];
-
-    //   console.log('on tree-view-node-title-clicked:', { detail: event.detail, entity });
-    // });
+    const containmentTreeView = document.getElementById("tree-view-1");
+    containmentTreeView.addEventListener('tree-view-node-title-clicked', (event) => {
+      const entity = viewer.metaScene.metaObjects[event.detail.treeViewNode.objectId];
+      const metaObject = viewer.metaScene.metaObjects[entity.id];
+      console.log('on tree-view-node-title-clicked:', { detail: event.detail, entity, metaObject });
+    });
 
     //Add custom events to viewer scene (https://xeokit.github.io/xeokit-sdk/docs/class/src/viewer/scene/input/Input.js~Input.html)
-    // viewer.scene.input.on("mouseclicked", (coords) => {
-    //   const hit = viewer.scene.pick({
-    //     canvasPos: coords
-    //   });
+    viewer.scene.input.on("mouseclicked", (coords) => {
+      const hit = viewer.scene.pick({
+        canvasPos: coords
+      });
 
-    //   if (hit && hit.entity && hit.entity.isObject) {
-    //     const entity = hit.entity;
-    //     const metaObject = viewer.metaScene.metaObjects[entity.id];
+      if (hit && hit.entity && hit.entity.isObject) {
+        const entity = hit.entity;
+        const metaObject = viewer.metaScene.metaObjects[entity.id];
 
-    //     if (metaObject) {
-    //       console.log("Custom Clicked entity:", {
-    //         id: entity.id,
-    //         name: metaObject.name,
-    //         type: metaObject.type,
-    //         volume: entity.volume,
-    //         aabb: entity.aabb
-    //       });
-    //     }
-    //   }
-    // });
+        if (metaObject) {
+          console.log("Custom Clicked entity:", {
+            id: entity.id,
+            name: metaObject.name,
+            type: metaObject.type,
+            volume: entity.volume,
+            aabb: entity.aabb
+          });
+        }
+      }
+    });
   </script>
 </head>
 
 <body>
   <div class="app">
     <xeo-viewer id="viewer-1" transparent="true" @model-entity-clicked="entityClicked" nav-cube-enabled="true"
-      nav-cube-position="bottom-right">
+      nav-cube-position="bottom-left">
       <xeo-tree-view-panel width="350px" bgColor="rgba(239,207,227,0.6)" position="right">
         <xeo-tree-view hierarchy="containment" autoExpandDepth="3" id="tree-view-1"
           @tree-view-node-title-clicked="treeNodeTitleClicked"></xeo-tree-view>

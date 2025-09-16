@@ -4,7 +4,7 @@
     "": {
       "name": "@xeokit/xeokit-webcomponents",
       "dependencies": {
-        "@creooxag/cxconverter": "^0.0.3-alpha",
+        "@creooxag/cxconverter": "^5.4.5-beta-2",
         "@xeokit/xeokit-sdk": "^2.6.90",
       },
       "devDependencies": {
@@ -19,7 +19,7 @@
     },
   },
   "packages": {
-    "@creooxag/cxconverter": ["@creooxag/cxconverter@0.0.3-alpha", "", {}, "sha512-UFtMF64hIjxZTE9u3iDwtlArW0Eo8C50M5rbfAQm7nPbkiNG3rOOa7Y8/lFtPui9fa09Ju601cSxdQR+1wQXWA=="],
+    "@creooxag/cxconverter": ["@creooxag/cxconverter@5.4.5-beta-2", "", {}, "sha512-Z0QBAhy7MEwIp2eZ7GidMjexOTaLzqqREa1JjF09X6L4W4qAWw+4V8cKcNKdTZYBBY7rubitLDl5gE+R8geNTQ=="],
 
     "@eslint-community/eslint-utils": ["@eslint-community/eslint-utils@4.4.1", "", { "dependencies": { "eslint-visitor-keys": "^3.4.3" }, "peerDependencies": { "eslint": "^6.0.0 || ^7.0.0 || >=8.0.0" } }, "sha512-s3O3waFUrMV8P/XaF/+ZTp1X9XBZW1a4B97ZnjQF2KYWaFD2A8KyFBsrsfSjEmjn3RGWAIuvlneuZm3CUK3jbA=="],
 
