@@ -4,7 +4,7 @@ import { XKTLoaderPlugin, LASLoaderPlugin, OBJLoaderPlugin, GLTFLoaderPlugin, ST
 import { ifc2gltf } from '@creooxag/cxconverter';
 
 class XeoModel extends HTMLElement {
-  src: string;
+  _src: string | undefined;
   type: string | undefined;
   viewerId: string | null | undefined;
   showEdges: boolean;
@@ -17,7 +17,7 @@ class XeoModel extends HTMLElement {
 
   constructor() {
     super();
-    this.src = "";
+    this._src = undefined;
     this.type = "";
     this.viewerId = "";
     this.showEdges = false;
@@ -27,6 +27,21 @@ class XeoModel extends HTMLElement {
     this.rotation = [0, 0, 0];
     this.fp64 = false;
     this.boundingBox = false;
+  }
+
+  set src(value) {
+    if (this._src === value) return;
+    this._src = value;
+
+    if (value) {
+      this.setAttribute('src', value);
+    } else {
+      this.removeAttribute('src');
+    }
+  }
+
+  get src() {
+    return this._src;
   }
 
   static get observedAttributes() {
@@ -59,6 +74,12 @@ class XeoModel extends HTMLElement {
     this.dispatchEvent(ce);
   }
 
+  attributeChangedCallback(name, oldValue, newValue) {
+    if (name === 'src' && newValue !== oldValue) {
+      this._src = newValue;
+    }
+  }
+
   async connectedCallback() {
     this.viewerId = this.parentElement!.getAttribute("id");
     if (!this.viewerId) return;
@@ -80,12 +101,6 @@ class XeoModel extends HTMLElement {
         this.type = this.src.split('.').pop();
       }
     }
-
-    // if (this.hasAttribute("@model-loaded")) {
-    //   this.addEventListener("model-loaded", (e: any) => {
-    //     console.log("Model loaded EVENT:", e.detail.model);
-    //   });
-    // }
 
     if (this.hasAttribute("show-edges")) {
       this.showEdges = this.getAttribute("show-edges") === 'true' || this.getAttribute("show-edges") === '1';
@@ -115,6 +130,11 @@ class XeoModel extends HTMLElement {
       this.boundingBox = this.getAttribute("bounding-box") === 'true' || this.getAttribute("bounding-box") === '1';
     }
 
+    if (!this.src) {
+      console.error("No src attribute defined for xeo-model loading.");
+      return;
+    }
+
     const self = this;
 
     if (this.type === 'xkt') {
@@ -128,10 +148,10 @@ class XeoModel extends HTMLElement {
         edges: this.showEdges,
       });
 
-
       sceneModel.on("loaded", function () {
         self.handleLoaded(sceneModel);
         const t1 = performance.now();
+        // @ts-ignore
         console.log(`XKT Model loaded in ${Math.floor(t1 - t0) / 1000.0} seconds, Objects: ${sceneModel.numEntities}`);
 
         self.viewToFit(viewer);
@@ -157,6 +177,7 @@ class XeoModel extends HTMLElement {
       sceneModel.on("loaded", function () {
         self.handleLoaded(sceneModel);
         const t1 = performance.now();
+        //@ts-ignore
         console.log(`LAS Model loaded in ${Math.floor(t1 - t0) / 1000.0} seconds, Objects: ${sceneModel.numEntities}`);
 
         self.viewToFit(viewer);
@@ -215,6 +236,7 @@ class XeoModel extends HTMLElement {
       sceneModel.on("loaded", function () {
         self.handleLoaded(sceneModel);
         const t1 = performance.now();
+        //@ts-ignore
         console.log(`GLTF Model loaded in ${Math.floor(t1 - t0) / 1000.0} seconds, Objects: ${sceneModel.numEntities}`);
 
         self.viewToFit(viewer);
@@ -237,6 +259,7 @@ class XeoModel extends HTMLElement {
       sceneModel.on("loaded", function () {
         self.handleLoaded(sceneModel);
         const t1 = performance.now();
+        //@ts-ignore
         console.log(`STL Model loaded in ${Math.floor(t1 - t0) / 1000.0} seconds, Objects: ${sceneModel.numEntities}`);
 
         self.viewToFit(viewer);
@@ -262,6 +285,7 @@ class XeoModel extends HTMLElement {
       sceneModel.on("loaded", function () {
         self.handleLoaded(sceneModel);
         const t1 = performance.now();
+        //@ts-ignore
         console.log(`DotBIM Model loaded in ${Math.floor(t1 - t0) / 1000.0} seconds, Objects: ${sceneModel.numEntities}`);
 
         self.viewToFit(viewer);
@@ -312,6 +336,7 @@ class XeoModel extends HTMLElement {
       sceneModel.on("loaded", function () {
         self.handleLoaded(sceneModel);
         const t1 = performance.now();
+        //@ts-ignore
         console.log(`IFC Model loaded in ${Math.floor(t1 - t0) / 1000.0} seconds, Objects: ${sceneModel.numEntities}`);
 
         self.viewToFit(viewer);

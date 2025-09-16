@@ -149,7 +149,7 @@ class XeoViewer extends HTMLElement {
     viewer.cameraFlight.jumpTo({ projection: 'ortho' }); // ortho
 
     if (this.navCubeEnabled) {
-      const navCubePlugin = new NavCubePlugin(viewer, {
+      new NavCubePlugin(viewer, {
         canvasElement: canvasCube,
         color: "lightblue",
         cameraFly: true,
@@ -157,8 +157,6 @@ class XeoViewer extends HTMLElement {
         cameraFlyDuration: 0.5,
         shadowVisible: false,
       });
-
-      //canvasCube.style.left = '25px';
 
       if (this.navCubePosition === "top-left") {
         canvasCube.style.left = '25px';
@@ -181,31 +179,31 @@ class XeoViewer extends HTMLElement {
         canvasCube.style.top = 'auto';
         canvasCube.style.bottom = '25px';
       }
+    }
 
-      viewer.scene.input.on("mouseclicked", (coords) => {
-        const hit = viewer.scene.pick({
-          canvasPos: coords
-        });
-
-        if (hit && hit.entity && hit.entity.isObject) {
-          const entity = hit.entity;
-          const metaObject = viewer.metaScene.metaObjects[entity.id];
-
-          if (metaObject) {
-            this.customEvent = new CustomEvent('model-entity-clicked', {
-              bubbles: true,
-              cancelable: false,
-              composed: true,
-              detail: { entity, metaObject }
-            });
-
-            this.dispatchEvent(this.customEvent);
-          }
-        }
+    viewer.scene.input.on("mouseclicked", (coords) => {
+      const hit = viewer.scene.pick({
+        canvasPos: coords
       });
 
-      XeoViewerService.getInstance().setViewer(viewer, this.id);
-    };
+      if (hit && hit.entity && hit.entity.isObject) {
+        const entity = hit.entity;
+        const metaObject = viewer.metaScene.metaObjects[entity.id];
+
+        if (metaObject) {
+          this.customEvent = new CustomEvent('model-entity-clicked', {
+            bubbles: true,
+            cancelable: false,
+            composed: true,
+            detail: { entity, metaObject }
+          });
+
+          this.dispatchEvent(this.customEvent);
+        }
+      }
+    });
+
+    XeoViewerService.getInstance().setViewer(viewer, this.id);
   }
 
   static get observedAttributes() {
