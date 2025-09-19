@@ -21,7 +21,7 @@ onMounted(() => {
 <template>
   <div id="viewer-container">
     <xeo-viewer id="viewer-1" transparent="true">
-      <xeo-model src="https://sos-ch-gva-2.exo.io/creoox-public/example-no-1.ifc" id="model-1" @model-loaded="onModelLoaded"></xeo-model>
+      <xeo-model src="https://sos-ch-gva-2.exo.io/creoox-public/example-no-1.xkt" id="model-1" @model-loaded="onModelLoaded"></xeo-model>
     </xeo-viewer>
   </div>
 </template>
