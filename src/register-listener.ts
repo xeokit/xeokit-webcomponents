@@ -3,12 +3,13 @@ function registerEventListener(tagName: string, attributeName: string) {
 
   Array.from(modelComponents).forEach((modelComponent) => {
     if (modelComponent.hasAttribute(`@${attributeName}`)) {
-      const callbackName = modelComponent.getAttribute(`@${attributeName}`);
+      const callbackName: string | null = modelComponent.getAttribute(`@${attributeName}`);
 
       if (callbackName) {
         modelComponent?.addEventListener(attributeName, (event: Event) => {
-          if (typeof window[callbackName] === 'function') {
-            window[callbackName](event);
+          const win = window as Window & { [key: string]: any };
+          if (typeof win[callbackName] === 'function') {
+            win[callbackName](event);
           }
         });
       }
