@@ -96,8 +96,6 @@ class XeoViewer extends HTMLElement {
   colorTextureEnabled: boolean;
   navCubeEnabled: boolean;
   navCubePosition: string | null;
-  _shadowRoot: ShadowRoot;
-  customEvent: CustomEvent;
 
   constructor() {
     super();
@@ -191,14 +189,14 @@ class XeoViewer extends HTMLElement {
         const metaObject = viewer.metaScene.metaObjects[entity.id];
 
         if (metaObject) {
-          this.customEvent = new CustomEvent('model-entity-clicked', {
+          const customEvent = new CustomEvent('model-entity-clicked', {
             bubbles: true,
             cancelable: false,
             composed: true,
             detail: { entity, metaObject }
           });
 
-          this.dispatchEvent(this.customEvent);
+          this.dispatchEvent(customEvent);
         }
       }
     });

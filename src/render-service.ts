@@ -32,7 +32,7 @@ export class RenderService {
     node: TreeViewNode,
     expandHandler: EventListener,
     checkHandler: EventListener,
-    contextmenuHandler: EventListener,
+    _contextmenuHandler: EventListener,
     titleClickHandler: EventListener
   ): HTMLElement {
     const nodeElement = document.createElement('li');

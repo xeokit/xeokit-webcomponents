@@ -10,8 +10,6 @@ export default defineConfig({
     vue({
       template: {
         compilerOptions: {
-          // Tell Vue to ignore all tags that start with 'xeo-'
-          // This is a common convention for custom elements.
           isCustomElement: (tag) => tag.startsWith('xeo-'),
         },
       },

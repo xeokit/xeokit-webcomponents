@@ -165,7 +165,7 @@ export default class XeoTreeView extends HTMLElement {
         });
     }
 
-    private getViewerId(node: HTMLElement, depth = 0) {
+    private getViewerId(node: HTMLElement, depth = 0): string | null {
         if (depth > 2) {
             console.error("wrong hierarchy of xeo-elements!");
             return null;

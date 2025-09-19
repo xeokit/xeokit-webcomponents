@@ -1,10 +1,10 @@
 import { XeoViewerService } from "./xeo-viewer-service";
-import { Viewer, buildBoxLinesGeometryFromAABB, Mesh, PhongMaterial, ReadableGeometry, VBOSceneModel, Node } from "@xeokit/xeokit-sdk";
-import { XKTLoaderPlugin, LASLoaderPlugin, OBJLoaderPlugin, GLTFLoaderPlugin, STLLoaderPlugin, DotBIMLoaderPlugin } from "@xeokit/xeokit-sdk";
-import { ifc2gltf } from '@creooxag/cxconverter';
+import { Viewer, buildBoxLinesGeometryFromAABB, Mesh, PhongMaterial, ReadableGeometry, VBOSceneModel } from "@xeokit/xeokit-sdk";
+import { XKTLoaderPlugin, LASLoaderPlugin, OBJLoaderPlugin, GLTFLoaderPlugin, STLLoaderPlugin, DotBIMLoaderPlugin, CxConverterIFCLoaderPlugin } from "@xeokit/xeokit-sdk";
+import * as CxConverter from '@creooxag/cxconverter';
 
 class XeoModel extends HTMLElement {
-  _src: string | undefined;
+  _src: string | null;
   type: string | undefined;
   viewerId: string | null | undefined;
   showEdges: boolean;
@@ -17,7 +17,7 @@ class XeoModel extends HTMLElement {
 
   constructor() {
     super();
-    this._src = undefined;
+    this._src = null;
     this.type = "";
     this.viewerId = "";
     this.showEdges = false;
@@ -74,7 +74,7 @@ class XeoModel extends HTMLElement {
     this.dispatchEvent(ce);
   }
 
-  attributeChangedCallback(name, oldValue, newValue) {
+  attributeChangedCallback(name: string, oldValue: string | null, newValue: string | null) {
     if (name === 'src' && newValue !== oldValue) {
       this._src = newValue;
     }
@@ -199,7 +199,7 @@ class XeoModel extends HTMLElement {
         src: this.src,
       });
 
-      sceneModel.on("loaded", function () {
+      sceneModel.on("loaded", () => {
         const ce = new CustomEvent('model-loaded', {
           bubbles: true,
           composed: true,
@@ -295,42 +295,15 @@ class XeoModel extends HTMLElement {
         }
       });
     } else if (this.type === 'ifc') {
-      const loader = new GLTFLoaderPlugin(viewer);
-      const uint8Array = await this.downloadUrlToUint8Array(this.src) as string;
-
-      const options = JSON.stringify(
-        {
-          inputParameters: {
-            exportPropertySets: "yes",
-            exportIfcPropertyTypes: "yes",
-            exportIfcValueTypes: "yes",
-            exportPolylines: "yes",
-            excludeGeometryForIfcTypes: ["IfcOpeningElement"],
-            exportGeometryOnlyForIfcTypes: [""],
-            excludeGUIDs: [""],
-            exportOnlyGUIDs: [""],
-            centerModelAtOrigin: "no",
-            ignoreProfileRadius: "yes",
-            enableGltfCompression: "yes",
-            enableGltfQuantization: "no",
-            exportNormals: "no",
-            numPointsPerCircle: 18,
-            licenceKey: "",
-            // JSON above is copied from default input config file. Changes applied here:
-            loadingPriorityTypes: ["IFCWALL", "IFCSLAB", "IFCWINDOW", "IFCROOF", "IFCFURNISHINGELEMENT", "IFCAIRTERMINAL"]//[ "IfcOpeningElement" ],
-          }
-        });
-
-      const { gltf, metaData } = await ifc2gltf(uint8Array, { remote: true, inputOptions: options });
+      const cxConverterIFCLoaderPlugin = new CxConverterIFCLoaderPlugin(viewer);
+      // @ts-ignore xeokit-sdk missing types
+      cxConverterIFCLoaderPlugin.setCxConverterModule(CxConverter);
 
       const t0 = performance.now();
       const currentModelId = "myIFCModel" + Math.random();
 
-      const sceneModel = await loader.load({
-        id: currentModelId,
-        gltf: gltf,
-        // @ts-ignore xeokit
-        metaModelJSON: metaData,
+      const sceneModel = await cxConverterIFCLoaderPlugin.load({
+        src: this.src
       });
 
       sceneModel.on("loaded", function () {
@@ -353,38 +326,6 @@ class XeoModel extends HTMLElement {
       projection: "perspective",
       aabb: viewer.scene.getAABB([]),
     });
-  }
-
-  async downloadUrlToUint8Array(url: string) {
-    try {
-      const response = await fetch(url);
-      if (!response.ok) {
-        throw new Error(`HTTP error! status: ${response.status}`);
-      }
-
-      const arrayBuffer = await response.arrayBuffer();
-      const file = new File([arrayBuffer], 'model.ifc', { type: 'application/octet-stream' });
-      const fileReader = new FileReader();
-
-      const uint8ArrayPromise = new Promise((resolve, reject) => {
-        fileReader.onload = () => {
-          const arrayBuffer = fileReader.result as ArrayBuffer;
-          const uint8Array = new Uint8Array(arrayBuffer);
-          resolve(uint8Array);
-        };
-
-        fileReader.onerror = () => reject(new Error('Failed to read file'));
-      });
-
-      fileReader.readAsArrayBuffer(file);
-
-      const uint8Array = await uint8ArrayPromise;
-
-      return uint8Array;
-    } catch (error) {
-      console.error('Error downloading file:', error);
-      throw error;
-    }
   }
 }
 
