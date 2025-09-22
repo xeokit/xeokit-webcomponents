@@ -1,21 +1,10 @@
 # xeokit-webcomponents
 
-To install dependencies:
+How to use xeokit webcomponents: https://xeokit.io/blog/building-3d-model-viewers-with-xeokit-webcomponents
 
-```bash
-bun install
+Example:
+```html
+<xeo-viewer id="viewer-1" transparent="true">
+  <xeo-model src="https://sos-ch-gva-2.exo.io/creoox-public/example-no-1.xkt" id="model-1" bounding-box="true" show-edges="true"></xeo-model>
+</xeo-viewer>
 ```
-
-To build:
-
-```bash
-bun run build
-```
-
-To run dev:
-
-```bash
-bun dev
-```
-
-This project was created using `bun init` in bun v1.2.0. [Bun](https://bun.sh) is a fast all-in-one JavaScript runtime.
